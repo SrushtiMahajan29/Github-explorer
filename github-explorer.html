@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Explorer</title>
+    <style>
+     
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px 20px;
+            padding: 20px 20px;
+            background:#c45ece87;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:#a8b0ee;
+            flex-direction: column;
+        }
+
+        #usernameInput {
+            width: 80%;
+            padding: 10px;
+        }
+
+        #fetchButton {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>GitHub User Explorer</h1>
+        <input type="text" id="usernameInput" placeholder="Enter GitHub Username">
+        <button id="fetchButton">Fetch Details</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const usernameInput = document.getElementById('usernameInput');
+        const fetchButton = document.getElementById('fetchButton');
+        const result = document.getElementById('result');
+
+        fetchButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+
+            if (username === '') {
+                result.innerHTML = 'Please enter a GitHub username.';
+                return;
+            }
+
+            fetch(`https://api.github.com/users/${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Not Found') {
+                        result.innerHTML = 'User not found.';
+                    } else {
+                        result.innerHTML = `
+                            <h2>${data.name || username}</h2>
+                            <p>Username: ${data.login}</p>
+                            <p>Public Repositories: ${data.public_repos}</p>
+                            <p>Followers: ${data.followers}</p>
+                            <p>Following: ${data.following}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    result.innerHTML = 'An error occurred while fetching data.';
+                });
+        });
+    </script>
+</body>
+
+</html>
